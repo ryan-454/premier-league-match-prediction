@@ -1,72 +1,8 @@
 # Premier League Match Win Predictor
 
-Predicts whether a Premier League team will **win** a given match (binary: Win vs Not Win) using a weighted soft-voting ensemble of four ML models trained on historical match data from 2017–2024.
+A machine learning app that predicts whether a Premier League team will **win** a given match (binary: Win vs Not Win), built on 8 seasons of historical match data.
 
-**Best results: 0.6318 precision, 0.6921 accuracy** on the 2024/25 season test set.
-
----
-
-## How it works
-
-### Features engineered before each match:
-- Venue, opponent, hour, day, matchweek encodings
-- Cumulative season stats: goals scored/conceded, points, goal difference (all *before* the match)
-- True pre-match league position (computed matchweek by matchweek)
-- Rolling form: wins last 5, home wins last 5, PPG last 5
-- Win/loss streak, clean sheets last 5
-- Head-to-head win rate (last 5 meetings vs this opponent)
-- Rest days since last match
-- Referee encoding
-- All of the above mirrored for the opponent
-- Difference features: points diff, GD diff, position diff
-
-### Model:
-A `VotingClassifier(voting="soft")` combining:
-
-| Model | Weight |
-|---|---|
-| Random Forest | 19 |
-| XGBoost | 16 |
-| Gradient Boosting | 1 |
-| LightGBM | 6 |
-
-- **Train**: seasons 2020–2023
-- **Test**: matches from 2024-08-16 onward (2024/25 season)
-
----
-
-## Requirements
-
-Python 3.9+ recommended.
-```bash
-pip install pandas numpy scikit-learn xgboost lightgbm streamlit
-```
-
----
-
-## Data
-
-Place your dataset at `data/match_df.csv`. The CSV must contain these columns at minimum:
-
-`date`, `time`, `round`, `day`, `venue`, `result`, `gf`, `ga_x`, `opponent`, `xg_x`, `xga`, `poss_x`, `referee`, `sh_x`, `sot`, `crdy`, `crdr`, `season`, `team`
-
-- `date` format: `%d-%m-%Y` (e.g. `16-08-2024`)
-- `result`: one of `W`, `D`, `L`
-
----
-
-## Usage
-
-### Jupyter Notebook
-1. Place dataset at `data/match_df.csv`
-2. Open `notebook.ipynb` and run all cells
-3. Output: precision, accuracy, classification report
-
-### Streamlit App
-```bash
-streamlit run app.py
-```
-Opens in browser. Select home/away teams, matchweek, date, kickoff time and referee to get a prediction with win probability and current form stats for both teams.
+🟢 **[Live Demo](https://premier-league-match-prediction-6w5bqypkpykcjc4p5pilab.streamlit.app/)**
 
 ---
 
@@ -74,20 +10,89 @@ Opens in browser. Select home/away teams, matchweek, date, kickoff time and refe
 
 | Metric | Score |
 |---|---|
-| Precision (Win) | 0.6318 |
-| Accuracy | 0.6921 |
-| Not Win recall | 0.84 |
-| Win recall | 0.44 |
+| Accuracy | **69.21%** |
+| Win Precision | **63.18%** |
+| Not Win Recall | 0.84 |
+| Win Recall | 0.44 |
 
-For context, a naive "always predict not-win" baseline achieves ~62% accuracy. Professional football prediction models typically sit in the 55–65% accuracy range.
+> For context, a naive "always predict not-win" baseline achieves ~62% accuracy. Professional football prediction models typically sit in the 55–65% range — this model outperforms that benchmark.
 
 ---
 
-## Project structure
+## How It Works
+
+### Model
+A weighted soft-voting ensemble of four ML models trained on seasons 2020–2023 and tested on the 2024/25 season:
+
+| Model | Weight |
+|---|---|
+| Random Forest | 19 |
+| XGBoost | 16 |
+| LightGBM | 6 |
+| Gradient Boosting | 1 |
+
+### Features Engineered (40+)
+All features are computed strictly *before* each match to prevent data leakage:
+
+- **Form:** rolling wins last 5, PPG last 5, win/loss streak, clean sheets last 5
+- **Season stats:** cumulative goals scored/conceded, points, goal difference
+- **Position:** true pre-match league position computed matchweek by matchweek
+- **Head-to-head:** win rate across last 5 meetings vs the opponent
+- **Match context:** venue, referee encoding, rest days, hour, day, matchweek
+- **Opponent mirrors:** all of the above mirrored for the opposing team
+- **Difference features:** points diff, goal difference diff, position diff
+
+### Data
+6,600+ match records scraped from FBref across 8 seasons (2017–2024) using ScraperFC. The pipeline is designed to incrementally update as new match results are played.
+
+---
+
+## Streamlit App
+
+Select home/away teams, matchweek, date, and referee to get a win probability and current form stats for both teams.
+
+```bash
+streamlit run app.py
 ```
-├── notebook.ipynb       # full pipeline
+
+Or try the **[live version](https://premier-league-match-prediction-6w5bqypkpykcjc4p5pilab.streamlit.app/)** instantly.
+
+---
+
+## Run Locally
+
+**Requirements:** Python 3.9+
+
+```bash
+pip install pandas numpy scikit-learn xgboost lightgbm streamlit
+```
+
+Place your dataset at `final_df2.csv` with the following columns:
+
+`date`, `time`, `round`, `day`, `venue`, `result`, `gf`, `ga`, `opponent`, `xg`, `xga`, `poss`, `referee`, `sh`, `sot`, `crdy`, `crdr`, `season`, `team`
+
+- `date` format: `%d-%m-%Y` (e.g. `16-08-2024`)
+- `result`: one of `W`, `D`, `L`
+
+### Jupyter Notebook
+1. Place dataset at `final_df2.csv`
+2. Open `notebook.ipynb` and run all cells
+3. Output: precision, accuracy, classification report
+
+---
+
+## Project Structure
+
+```
+├── notebook.ipynb       # full pipeline: feature engineering, training, evaluation
 ├── app.py               # Streamlit prediction interface
 ├── data/
 │   └── match_df.csv     # match dataset (not included)
 └── README.md
 ```
+
+---
+
+## Tech Stack
+
+`Python` `scikit-learn` `XGBoost` `LightGBM` `Streamlit` `Pandas` `ScraperFC`
