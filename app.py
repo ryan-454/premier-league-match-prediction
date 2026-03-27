@@ -91,7 +91,7 @@ def compute_ppg(group, n=5):
 # ── Load data ────────────────────────────────────────────────
 @st.cache_data
 def load_data():
-    data = pd.read_csv(r'C:\Users\Ryan George\OneDrive\Desktop\study\Prem_pred\proj3\final_data2.csv')
+    data = pd.read_csv('final_data2.csv')
     
     # --- all your preprocessing here ---
     opponent_name_fix = {
