@@ -100,15 +100,5 @@ Place your dataset at the path specified in `app.py`. The CSV must contain:
 streamlit run app.py
 ```
 
----
 
-## Project Structure
 
-```
-├── notebook.ipynb          # full ML pipeline
-├── app.py                  # Streamlit prediction + betting interface  
-├── scraper.ipynb           # weekly data scraping pipeline
-├── data/
-│   └── final_data2.csv     # match dataset (not included)
-└── README.md
-```
