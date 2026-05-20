@@ -2,8 +2,6 @@
 
 Predicts whether a Premier League team will **win** a given home match (binary: Win vs Not Win) using a weighted soft-voting ensemble trained on historical match data from 2017–2026.
 
-> ⚠️ **Note**: The Streamlit app is a work in progress and may not run correctly out of the box without the required dataset. The notebook pipeline is fully functional.
-
 **Live Demo**: [premier-league-match-prediction.streamlit.app](https://premier-league-match-prediction-6w5bqypkpykcjc4p5pilab.streamlit.app/)
 
 ---
